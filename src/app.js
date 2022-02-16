@@ -18,6 +18,6 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
 //Routes
-app.use('/api/countries', require('./routes/index'));
+app.use(require('./routes/index'));
 
 module.exports = app;

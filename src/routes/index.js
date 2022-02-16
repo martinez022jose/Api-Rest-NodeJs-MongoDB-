@@ -5,7 +5,7 @@ const Country = require('../models/country');
 
 router.get('/', async (req, res)=>{
     const countries = await Country.find();
-    res.send(countries);
+    res.send("holddda");
 });
 
 router.post('/add-country', async (req, res)=>{
