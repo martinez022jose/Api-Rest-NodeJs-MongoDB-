@@ -2,45 +2,48 @@ const { Router } = require('express');
 
 const router = Router();
 const Country = require('../models/country');
+const Orden = require('../models/orden');
 
 router.get('/', async (req, res)=>{
-    //const countries = await Country.find();
-    res.send("holddda");
+    const ordenes = await Orden.find();
+    res.send(ordenes);
 });
 
-router.post('/add-country', async (req, res)=>{
-    const countries = await Country.find();
-    const id = countries.length + 1;
-    const newCountry = new Country({
+router.post('/add-orden', async (req, res)=>{
+    const ordenes = await Orden.find();
+    const id = ordenes.length + 1;
+    const newOrden = new Orden({
         id: id,
-        name: req.body.name,
-        capital: req.body.capital,
-        surface: req.body.surface,
-        currency: req.body.currency,
-        religion: req.body.religion,
+        description: req.body.description,
+        customer: req.body.customer,
+        amount: req.body.amount,
+        items: req.body.items,
+        cantTotal: req.body.cantTotal,
     });
 
-    await newCountry.save();
+    await newOrden.save();
     res.redirect('/');
     
 });
 
-router.get('/get-country/:id', async (req, res)=>{
+router.get('/get-orden/:id', async (req, res)=>{
     const { id } = req.params;
-    const getCountry = await Country.find({'_id':id});
-    res.send(getCountry);
+    const getOrden = await Orden.find({'id':id});
+    res.send(getOrden);
 });
 
-router.get('/filter-by/:field', async (req, res)=>{
-    const { field } = req.params;
-    const getCountries = await Country.find({field : field});
-    res.send(getCountries);
+router.get('/filter-by/:field/:value', async (req, res)=>{
+    const { field, value } = req.params;
+    const getOrdenes = await Orden.find({$where: field + '==' + 2} );
+    console.log(`${field}`+value);
+    console.log(getOrdenes);
+    res.send(getOrdenes);
 });
 
-router.get('/top-countries/:number', async (req, res)=>{
+router.get('/top-ordenes/:number', async (req, res)=>{
     const { number } = req.params;
-    const countries = await Country.find().limit(parseInt(number,10));
-    res.send(countries);
+    const ordenes = await Orden.find().limit(parseInt(number,10));
+    res.send(ordenes);
 });
 
 router.put('/update-country/:id', async (req, res)=>{
@@ -56,17 +59,16 @@ router.put('/increase-surface/:id', async (req, res)=>{
     res.redirect('/');
 });
 
-router.post('/delete-country/:id', async (req, res)=>{
+router.post('/delete-orden/:id', async (req, res)=>{
     const { id } = req.params;
-    await Country.findByIdAndDelete({'_id':id});
+    await Orden.remove({'id':id});
     res.redirect('/');
 });
 
 router.get('/all-delete', async (req, res)=>{
-    await Country.remove({});
+    await Orden.remove({});
     res.redirect('/');
 });
-
 
 router.get('/sort-by-default', async (req, res)=>{
     const orderedCountries = await Country.find().sort({'name': 1});
@@ -77,6 +79,17 @@ router.get('/sort-by/:field', async (req, res)=>{
     const { field } = req.params;
     const orderedCountries = await Country.find().sort({field: 1});
     res.send(orderedCountries);
+});
+
+router.get('/count-ordenes', async (req, res) => {
+    const ordenes = await Orden.find();
+    const total = ordenes.length;
+    res.send({"total ordenes": total});
+});
+
+router.get('/items', async (req, res) => {
+    const items = await Orden.distinct('items');
+    res.send(items);
 });
 
 module.exports = router;
